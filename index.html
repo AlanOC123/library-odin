@@ -10,31 +10,25 @@
 <body>
   <div class="main-container">
     <div class="add-to-library">
-      <form action="" method="post" class="form">
-        <label for="book-name">Book Name: </label>
-        <input type="text" name="book-name" id="book-name">
-        <label for="book-author">Book Author: </label>
-        <input type="text" name="book-author" id="book-author">
-        <label for="">Page Length: </label>
-        <input type="text" name="book-length" id="book-length">
-              
-        <label for="has-read">Have you Read this Book?</label>
+      <label for="book-name">Book Name: </label>
+      <input type="text" id="book-name">
+      <label for="book-author">Book Author:</label>
+      <input type="text" id="book-author">
+      <label for="book-length">Book Length</label>
+      <input type="number" id="book-length">
+      <p>Have you Read the Book? </p>
 
-        <div class="radio">
-          <div class="yes-wrapper">
-            <label for="yes">Yes</label>
-            <input type="radio" name="has-read" id="yes" value="Yes" checked>
-          </div>
+      <label for="has-read">Yes</label>
+      <input type="radio" name="has-read" value="yes" id="read-btn" checked>
 
-          <div class="no-wrapper">
-            <label for="no">No</label>
-            <input type="radio" name="has-read" id="no" value="No">
-          </div>
-        </div>
+      <label for="has-read">No</label>
+      <input type="radio" name="has-read" value="no" id="read-btn">
 
-        <button type="submit" id="btn">Add Book</button>
+      <label for="remove">Remove Book</label>
+      <input type="text" id="remove">
 
-      </form>
+      <button id="add-btn">Add Book</button>
+      <button id="remove-btn">Remove Book</button>
     </div>
 
     <div class="library-display"></div>

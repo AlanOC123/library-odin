@@ -1,276 +1,116 @@
-const library = [];
-const libraryDisplay = document.querySelector('.library-display');
-const btn = document.querySelector('#btn');
-const form = document.querySelector('.form');
-
-function Book(bookName, bookAuthor, bookLength, hasRead) {
-  this.name = bookName
-  this.author = bookAuthor
-  this.pageLength = bookLength
-  this.read = hasRead
-}
-
-Book.prototype.markRead = function() {
-  if (!this.read) {
-    this.read = true;
-  } else {
-    this.read = false;
+class Library {
+  #collection
+  #nameField
+  #authorField
+  #lengthField
+  #remove
+  constructor() {
+    this.#collection = [];
+    this.#nameField = document.querySelector('#book-name');
+    this.#authorField = document.querySelector('#book-author');
+    this.#lengthField = document.querySelector('#book-length');
+    this.#remove = document.querySelector('#remove');
   }
 
-  console.log(this.read);
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  displayLibrary();
-})
-
-btn.addEventListener('click', e => {
-  e.preventDefault();
-  const bookName = form.querySelector('#book-name').value;
-  const bookAuthor = form.querySelector('#book-author').value;
-  const bookLength = form.querySelector('#book-length').value;
-  const radioSelector = form.querySelector('.radio');
-  const hasRead = radioSelector.querySelector('#yes').checked;
-
-
-  const newBook = createNewBook(bookName, bookAuthor, bookLength, hasRead);
-
-  if (!(newBook === 'Invalid')) {
-    addToLibrary(newBook);
+  addToLibrary(book) {
+    this.#collection.push(book);
+    this.#nameField.value = '';
+    this.#authorField.value = '';
+    this.#lengthField.value = '';
   }
 
-  displayLibrary();
+  get collectionSize() {
+    return this.#collection.length;
+  }
 
-  form.reset();
+  get collectionList() {
+    return this.#collection;
+  }
 
-  const removebtn = document.querySelectorAll('.remove-btn');
-  const markAsReadbtn = document.querySelectorAll('.mark-as-read-btn');
-
-  removebtn.forEach(btn=> { btn.addEventListener('click', e => {
-      const btn = e.target;
-      const bookName = btn.dataset.bookName;
-
-      const removeMessage = removeBook(bookName);
-      alert(removeMessage);
-
-      displayLibrary();
+  printCollection() {
+    this.#collection.forEach(book => {
+      console.log(book);
     })
-  })
+  }
 
-  markAsReadbtn.forEach(btn => { btn.addEventListener('click', e => {
-      const btn = e.target;
-      const bookName = btn.dataset.bookName;
-      let hasRead = btn.dataset.hasRead;
-      hasRead = markAsRead(bookName);
+  createBook() {
+    return new Book(this.#nameField.value, this.#authorField.value, this.#lengthField.value);
+  }
 
-      if (!hasRead == true) {
-        btn.textContent = 'Mark Read';
-      } else {
-        btn.textContent = 'Mark Unread';
+  removeBook() {
+    for (let i = 0; i < this.collectionSize; i++) {
+      if (this.#collection[i].nameOfBook.toLowerCase() === this.#remove.value.toLowerCase()) {
+        this.#collection.splice(i, 1);
+        return
       }
-    })
-  })
+    }
+    alert('Not Found');
+    this.#remove.value = '';
+    return;
+  }
+}
 
-  console.dir(library)
-})
-
-
-
-function createNewBook(bookName, bookAuthor, bookLength, hasReadBook) {
-  if (
-    bookName === ''
-    || bookAuthor === ''
-    || bookLength === ''
-    ) {
-      return 'Invalid';
+class Book {
+  constructor(bookName, bookAuthor, bookLength) {
+    this.bookLength = Number(bookLength);
+    if (typeof this.bookLength !== 'number') {
+      console.log(typeof this.bookLength);
+      throw new TypeError('Length is not a number');
     }
 
-  return new Book (bookName, bookAuthor, bookLength, hasReadBook);
-}
+    if (typeof bookName !== 'string' || bookName === '' || typeof bookAuthor !== 'string' || bookAuthor === '') {
+      throw new TypeError('Invalid Name or Author')
+    }
 
-function addToLibrary(bookToAdd) {
-  library.push(bookToAdd);
-}
-
-function displayLibrary () {
-
-  if (library.length > 0 || libraryDisplay.firstElementChild) {
-    while (libraryDisplay.firstElementChild) {
-      libraryDisplay.removeChild(libraryDisplay.firstElementChild);
-      }
-  } 
-
-  for (let i = 0; i < library.length; i++) {
-    const bookName = library[i].name;
-    const bookAuthor = library[i].author;
-    const bookLength = library[i].pageLength;
-    const hasRead = library[i].read;
-
-    const libraryCard = createNewCard(bookName, bookAuthor, bookLength, hasRead);
-    libraryDisplay.appendChild(libraryCard);
+    this.bookName = bookName;
+    this.bookAuthor = bookAuthor;
   }
 
-  if (!(libraryDisplay.firstElementChild)) {
-    const emptyDisplayMessage = document.createElement('div');
-    emptyDisplayMessage.classList.add('empty-display-message');
-    emptyDisplayMessage.textContent = 'No Books to Display';
-    libraryDisplay.appendChild(emptyDisplayMessage);
+  get nameOfBook() {
+    return this.bookName
+  }
+
+  get nameOfAuthor() {
+    return this.bookAuthor
+  }
+
+  get pageLength() {
+    return this.bookLength
   }
 }
 
-function createNewCard(bookName, bookAuthor, bookLength, hasRead) {
-
-  const card = document.createElement('div');
-  card.classList.add('card');
-  if (!hasRead) {
-    card.classList.add('not-read');
-  } else {
-    card.classList.add('read');
+class Display {
+  #container
+  constructor() {
+    this.#container = document.querySelector('.library-display');
   }
 
-  card.dataset.bookName = bookName;
+  render(collection) {
+    while (this.#container.firstChild) {
+      this.#container.removeChild(this.#container.firstChild);
+    }
 
-  const bookNameSection = document.createElement('div');
-  const bookNameInfoLabel = document.createElement('p');
-  const bookNameInfo = document.createElement('p');
-
-  bookNameSection.classList.add('book-name');
-  bookNameInfoLabel.classList.add('card-label');
-  bookNameInfo.classList.add('card-info');
-  bookNameInfoLabel.textContent = 'Book Name: ';
-  bookNameInfo.textContent = bookName;
-
-  bookNameSection.appendChild(bookNameInfoLabel);
-  bookNameSection.appendChild(bookNameInfo);
-
-  const bookAuthorSection = document.createElement('div');
-  const bookAuthorInfoLabel = document.createElement('p');
-  const bookAuthorInfo = document.createElement('p');
-
-  bookAuthorSection.classList.add('book-author');
-  bookAuthorInfoLabel.classList.add('card-label');
-  bookAuthorInfo.classList.add('card-info');
-  bookAuthorInfoLabel.textContent = 'Author Name: ';
-  bookAuthorInfo.textContent = bookAuthor;
-
-  bookAuthorSection.appendChild(bookAuthorInfoLabel);
-  bookAuthorSection.appendChild(bookAuthorInfo);
-
-  const bookLengthSection = document.createElement('div');
-  const bookLengthInfoLabel = document.createElement('p');
-  const bookLengthInfo = document.createElement('p');
-
-  bookLengthSection.classList.add('book-length');
-  bookLengthInfoLabel.classList.add('card-label');
-  bookLengthInfo.classList.add('card-info');
-  bookLengthInfoLabel.textContent = 'Book Length: ';
-  bookLengthInfo.textContent = bookLength;
-
-  bookLengthSection.appendChild(bookLengthInfoLabel);
-  bookLengthSection.appendChild(bookLengthInfo);
-
-  const buttonSection = document.createElement('div');
-  const removeBookButton = document.createElement('button');
-  const markAsReadButton = document.createElement('button');
-
-  buttonSection.classList.add('button-section');
-  removeBookButton.classList.add('remove-btn');
-  removeBookButton.dataset.bookName = bookName;
-  markAsReadButton.classList.add('mark-as-read-btn');
-  removeBookButton.textContent = 'Remove';
-  if (hasRead === true) {
-    markAsReadButton.textContent = 'Mark Unread';
-  } else {
-    markAsReadButton.textContent = 'Mark Read';
+    collection.forEach(book => {
+      const div = document.createElement('div');
+      div.textContent = `${book.nameOfBook}, ${book.nameOfAuthor}, ${book.pageLength}`;
+      this.#container.append(div);
+    })
   }
-  markAsReadButton.dataset.bookName = bookName;
-  markAsReadButton.dataset.hasRead = hasRead;
 
-  buttonSection.appendChild(removeBookButton);
-  buttonSection.appendChild(markAsReadButton);
-
-  card.appendChild(bookNameSection);
-  card.appendChild(bookAuthorSection);
-  card.appendChild(bookLengthSection);
-  card.appendChild(buttonSection);
-
-  console.log(card);
-
-  return card;
 }
 
-function searchLibrary(bookName) {
-  for (let i = 0; i < library.length; i++) {
-    if (library[i].name === bookName) return i;
-  }
+const libraryModule = new Library();
+const displayModule = new Display();
 
-  return 'Book not Found';
-}
+const addBtn = document.querySelector('#add-btn');
+const removeBtn = document.querySelector('#remove-btn');
+addBtn.addEventListener('click', () => { 
+  const book = libraryModule.createBook() 
+  libraryModule.addToLibrary(book);
+  displayModule.render(libraryModule.collectionList);
+})
 
-function removeBook(bookToRemove) {
-  const index = searchLibrary(bookToRemove);
-  console.log(index);
-  
-  if (!(index === 'Book not Found')) {
-    library.splice(index, 1);
-  } else {
-    return 'Book Not Present';
-  }
-
-  return 'Book Removed';
-}
-
-function markAsRead(bookName) {
-  const index = searchLibrary(bookName);
-  const card = document.querySelector(`[data-book-name="${bookName}"`);
-  console.log(card)
-  
-  if (card.classList.contains('read')) {
-    card.classList.remove('read');
-    card.classList.add('not-read');
-  } else {
-    card.classList.remove('not-read');
-    card.classList.add('read');
-  }
-
-  library[index].markRead();
-  return library[index].read;
-}
-
-
-
-// const labelPlaceholder = 'Book Info'
-// const addBookSection = document.querySelector('.library-display');
-// const bookCard = document.createElement('div');
-// const bookNameWrapper = document.createElement('div');
-// const bookAuthorWrapper = document.createElement('div');
-// const bookLengthWrapper = document.createElement('div');
-// const cardLabel = document.createElement('p');
-// const cardInfo = document.createElement('p');
-
-
-
-
-// bookCard.classList.add('card');
-// bookNameWrapper.classList.add('book-name');
-// bookAuthorWrapper.classList.add('book-author');
-// bookLengthWrapper.classList.add('book-length');
-// cardLabel.classList.add('card-label');
-// cardInfo.classList.add('card-info');
-// cardLabel.textContent = labelPlaceholder;
-// cardInfo.textContent = labelPlaceholder
-
-// bookNameWrapper.appendChild(cardLabel);
-// bookNameWrapper.appendChild(cardInfo);
-
-// bookAuthorWrapper.appendChild(cardLabel);
-// bookAuthorWrapper.appendChild(cardInfo);
-
-// bookLengthWrapper.appendChild(cardLabel);
-// bookLengthWrapper.appendChild(cardInfo);
-
-// bookCard.appendChild(bookNameWrapper);
-// bookCard.appendChild(bookAuthorWrapper);
-// bookCard.appendChild(bookLengthWrapper);
-
-// addBookSection.appendChild(bookCard);
+removeBtn.addEventListener('click', () => {
+  libraryModule.removeBook();
+  displayModule.render(libraryModule.collectionList);
+})
