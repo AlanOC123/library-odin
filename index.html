@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
+  <title>Library Project</title>
+</head>
+<body>
+  <div class="main-container">
+    <div class="add-to-library">
+      <form action="" method="post" class="form">
+        <label for="book-name">Book Name: </label>
+        <input type="text" name="book-name" id="book-name">
+        <label for="book-author">Book Author: </label>
+        <input type="text" name="book-author" id="book-author">
+        <label for="">Page Length: </label>
+        <input type="text" name="book-length" id="book-length">
+              
+        <label for="has-read">Have you Read this Book?</label>
+
+        <div class="radio">
+          <div class="yes-wrapper">
+            <label for="yes">Yes</label>
+            <input type="radio" name="has-read" id="yes" value="Yes" checked>
+          </div>
+
+          <div class="no-wrapper">
+            <label for="no">No</label>
+            <input type="radio" name="has-read" id="no" value="No">
+          </div>
+        </div>
+
+        <button type="submit" id="btn">Add Book</button>
+
+      </form>
+    </div>
+
+    <div class="library-display"></div>
+  </div>
+</body>
+</html>
